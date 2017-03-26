@@ -1,0 +1,8 @@
+spring:
+  data:
+    mongodb:
+      username: cloudbooklibrary
+      host: ds137550.mlab.com
+      password: 1a2s3d$F%G^H
+      port: 37550
+      database: booklibrary
