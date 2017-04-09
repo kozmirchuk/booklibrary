@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*
  */
 
 @RestController
-@RequestMapping("/books", consumes = arrayOf("application/json"), produces = arrayOf("application/json"))
+@RequestMapping("/books", produces = arrayOf("application/json"))
 class BookController (@Autowired val bookMetaRepository: BookMetaRepository) {
 
 
@@ -18,11 +18,11 @@ class BookController (@Autowired val bookMetaRepository: BookMetaRepository) {
     fun books() = bookMetaRepository.findAll()
 
 
-    @RequestMapping(method = arrayOf(RequestMethod.POST))
+    @RequestMapping(method = arrayOf(RequestMethod.POST), consumes = arrayOf("application/json"))
     fun new(@RequestBody book : Book) = bookMetaRepository.save(book)
 
 
-    @RequestMapping("/{id}", method= arrayOf(RequestMethod.GET))
+    @RequestMapping("/{id}", method = arrayOf(RequestMethod.GET))
     fun findOne(@PathVariable id : String) = bookMetaRepository.findOne(id)
 
 }
