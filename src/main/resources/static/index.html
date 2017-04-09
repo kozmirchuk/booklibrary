@@ -13,30 +13,74 @@
 
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.3/angular.js"></script>
 
+    <!-- JQuery for bootstrap-->
+    <script
+            src="https://code.jquery.com/jquery-3.2.1.min.js"
+            integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+            crossorigin="anonymous"></script>
+
+    <script src="lib/ui-bootstrap-tpls-2.5.0.min.js"></script>
+
     <script src="app.js"></script>
 </head>
-<body ng-app="myApp">
+<body ng-app="myApp" ng-controller="BooksListController">
+    <script type="text/ng-template" id="myModalContent.html">
+        <div class="modal-header">
+            <h3 class="modal-title" id="modal-title">Add new book!</h3>
+        </div>
+        <form name="submitForm">
+            <div class="modal-body" id="modal-body">
+                <div class="form-group" ng-class="{'has-error': submitForm.$invalid && !submitForm.$pristine}">
+                    <label for="title">Title</label>
+                    <input type="text" class="form-control" id="title" placeholder="Oliver Twist" required
+                           ng-model="$ctrl.book.title">
+                </div>
+                <div class="form-group">
+                    <label for="author">Author</label>
+                    <input type="text" class="form-control" id="author" placeholder="Charles Dickens"
+                           ng-model="$ctrl.book.author">
+                </div>
+                <div class="form-group">
+                    <label for="isbn">ISBN</label>
+                    <input type="text" class="form-control" id="isbn" placeholder="978-0141439747"
+                           ng-model="$ctrl.book.isbn">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-default" type="button" ng-click="$ctrl.cancel()">Cancel</button>
+                <button class="btn btn-primary" type="button"
+                        ng-disabled="submitForm.$invalid"
+                        ng-click="$ctrl.ok()">OK</button>
+            </div>
+        </form>
+    </script>
+
     <nav class="navbar navbar-default">
         <div class="container-fluid">
-            <a class="navbar-brand" href="#">
-                Book Library
-            </a>
+            <div class="navbar-header">
+                <a class="navbar-brand" href="#">
+                    Book Library
+                </a>
+            </div>
+
+            <button class="btn btn-primary navbar-btn" ng-click="addBook()">Add new book</button>
+
         </div>
     </nav>
 
-    <div class="col-md-12" ng-controller="BooksListController">
+    <div class="col-md-12">
         <table class="table table-striped">
             <thead>
                 <tr>
-                    <th>Author</th>
                     <th>Title</th>
+                    <th>Author</th>
                     <th>ISBN</th>
                 </tr>
             </thead>
             <tbody>
                 <tr ng-repeat="book in books">
-                    <td>{{ book.author }}</td>
                     <td>{{ book.title }}</td>
+                    <td>{{ book.author }}</td>
                     <td>{{ book.isbn }}</td>
                 </tr>
             </tbody>
