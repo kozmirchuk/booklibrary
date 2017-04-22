@@ -10,3 +10,6 @@ import org.springframework.data.mongodb.core.mapping.Document
 
 @Document
 data class Book(val title : String, val author : String, @Id val isbn: String)
+
+@Document
+data class PdfFile(@Id var id: String, val byteArray: ByteArray)
