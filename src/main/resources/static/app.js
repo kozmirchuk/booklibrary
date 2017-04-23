@@ -37,32 +37,52 @@ myApp = angular.module('myApp', ['ui.bootstrap']);
             });
         };
 
-        function saveBook(book) {
-            $http({
-                method: 'POST',
-                url: '/books',
-                data: book,
+        function saveBook(result) {
+            const fd = new FormData();
+            fd.append('file', result.file);
+
+            $http.post('books/files', fd, {
+                transformRequest: angular.identity,
+                headers: {
+                    'Content-Type': undefined
+                },
+            }).then((response) => {
+                result.book.fileId = response.data.id;
+                $http({
+                    method: 'POST',
+                    url: '/books',
+                    data: result.book,
+                })
             }).then(
                 () => {
-                    $scope.books.push(book);
+                    $scope.books.push(result.book);
                 },
                 (err) => {
                     $log.error("Can't add book, err:", err.data)
                 }
-            );
+            ).catch(() => {
+                console.error("Book creation error");
+            });
+
         }
     });
 
-    app.controller('ModalInstanceCtrl', function ($uibModalInstance) {
+    app.controller('ModalInstanceCtrl', function ($scope, $uibModalInstance) {
         const $ctrl = this;
         $ctrl.book = { };
 
         $ctrl.ok = function () {
-            $uibModalInstance.close($ctrl.book);
+            $uibModalInstance.close({book: $ctrl.book, file: $ctrl.file});
         };
 
         $ctrl.cancel = function () {
             $uibModalInstance.dismiss('cancel');
+        };
+
+        $scope.setFiles = function(element) {
+            $scope.$apply(function(scope) {
+                $ctrl.file = element.files[0];
+            });
         };
     });
 })(myApp);
