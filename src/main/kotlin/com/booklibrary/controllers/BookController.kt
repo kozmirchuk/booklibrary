@@ -44,13 +44,12 @@ class BookController (@Autowired val bookMetaRepository: BookMetaRepository,
     fun findOne(@PathVariable id : String) = bookMetaRepository.findOne(id)
 
     @PostMapping("/files")
-    fun uploadPdfFile(@RequestParam("file") file : MultipartFile) : String {
+    fun uploadPdfFile(@RequestParam("file") file : MultipartFile) : PdfFile {
 
         val id = UUID.randomUUID().toString()
 
-        pdfFileRepository.save(PdfFile(id, file.bytes))
+        return pdfFileRepository.save(PdfFile(id, file.bytes))
 
-        return id
     }
 
     @GetMapping("/files/{id}", produces = arrayOf("application/pdf"))
