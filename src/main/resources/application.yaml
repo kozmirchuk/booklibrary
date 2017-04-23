@@ -1,4 +1,8 @@
 spring:
+  http:
+    multipart:
+      max-file-size: 100Mb
+      max-request-size: 100Mb
   data:
     mongodb:
       username: cloudbooklibrary
