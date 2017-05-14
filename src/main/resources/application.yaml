@@ -6,7 +6,7 @@ spring:
   data:
     mongodb:
       username: cloudbooklibrary
-      host: ds137550.mlab.com
+      host: 10.141.4.72
       password: 1a2s3d$F%G^H
-      port: 37550
+      port: 27207
       database: booklibrary
