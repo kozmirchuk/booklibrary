@@ -43,6 +43,14 @@ class BookController (@Autowired val bookMetaRepository: BookMetaRepository,
     @GetMapping("/{id}")
     fun findOne(@PathVariable id : String) = bookMetaRepository.findOne(id)
 
+    @DeleteMapping("/{id}")
+    fun deleteBook(@PathVariable id : String) {
+        val book = bookMetaRepository.findOne(id)
+        pdfFileRepository.delete(book.fileId)
+        bookMetaRepository.delete(book)
+    }
+
+
     @PostMapping("/files")
     fun uploadPdfFile(@RequestParam("file") file : MultipartFile) : PdfFile {
 
