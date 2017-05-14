@@ -2,11 +2,12 @@
  * Created by Andro on 09 апреля.
  */
 
-myApp = angular.module('myApp', ['ui.bootstrap']);
+myApp = angular.module('myApp', ['ui.bootstrap', 'smart-table']);
 
 (function(app) {
-    app.controller('BooksListController', function ($scope, $http, $log, $uibModal) {
+    app.controller('BooksListController', function ($scope, $http, $timeout, $log, $uibModal, $q) {
         $scope.books = [];
+        $scope.messageText = "Loading..";
 
         $http({
             method: 'GET',
@@ -14,9 +15,11 @@ myApp = angular.module('myApp', ['ui.bootstrap']);
         }).then(
             (request) => {
                 $scope.books = request.data;
+                $scope.messageText = "";
             },
             (err) => {
-                $log.error("Something bad happened", err)
+                $log.error("Something bad happened", err);
+                $scope.messageText = "Can't load books. Internal error.";
             }
         );
 
@@ -37,31 +40,59 @@ myApp = angular.module('myApp', ['ui.bootstrap']);
             });
         };
 
-        function saveBook(result) {
-            const fd = new FormData();
-            fd.append('file', result.file);
-
-            $http.post('books/files', fd, {
-                transformRequest: angular.identity,
-                headers: {
-                    'Content-Type': undefined
+        $scope.delete = function(book) {
+            $http({
+                method: 'DELETE',
+                url: '/books/' + book.isbn
+            }).then(
+                (request) => {
+                    const id = $scope.books.findIndex((b, z, zz) => b.isbn === book.isbn);
+                    $scope.books.splice(id, 1);
                 },
-            }).then((response) => {
+                (err) => {
+                    $log.error("Something bad happened", err);
+                    $scope.messageText = "Can't delete book. Internal error.";
+                    $timeout(() => $scope.messageText = "", 5000);
+                }
+            );
+        };
+
+        function saveBook(result) {
+            $scope.messageText = "Saving book..";
+
+            let promise = $q.when({data: {id: null}});
+            if(typeof result.file !== 'undefined') {
+                const fd = new FormData();
+                fd.append('file', result.file);
+
+                promise = $http.post('books/files', fd, {
+                    transformRequest: angular.identity,
+                    headers: {
+                        'Content-Type': undefined
+                    },
+                });
+            }
+
+            promise.then((response) => {
+                if(!response.data.success)
+                    return $q.reject(response.data);
+
                 result.book.fileId = response.data.id;
-                $http({
+                return $http({
                     method: 'POST',
                     url: '/books',
                     data: result.book,
                 })
-            }).then(
+            }
+            ).then(
                 () => {
                     $scope.books.push(result.book);
-                },
-                (err) => {
-                    $log.error("Can't add book, err:", err.data)
+                    $scope.messageText = "";
                 }
-            ).catch(() => {
-                console.error("Book creation error");
+            ).catch((err) => {
+                $log.error("Can't add book, err:", err.data);
+                $scope.messageText = "Can't save book. Internal error.";
+                $timeout(() => $scope.messageText = "", 5000);
             });
 
         }

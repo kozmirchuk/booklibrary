@@ -27,7 +27,12 @@ class BookController (@Autowired val bookMetaRepository: BookMetaRepository,
 
 
     @PostMapping(consumes = arrayOf("application/json"))
-    fun new(@RequestBody book : Book) = bookMetaRepository.save(book)
+    fun new(@RequestBody book : Book) : ResponseEntity<Book> =
+        if(!bookMetaRepository.exists(book.isbn))
+            ResponseEntity.ok(bookMetaRepository.save(book))
+        else
+            ResponseEntity.badRequest().build()
+
 
 
     @PutMapping("/{id}", consumes = arrayOf("application/json"))
@@ -46,7 +51,10 @@ class BookController (@Autowired val bookMetaRepository: BookMetaRepository,
     @DeleteMapping("/{id}")
     fun deleteBook(@PathVariable id : String) {
         val book = bookMetaRepository.findOne(id)
-        pdfFileRepository.delete(book.fileId)
+
+        if(book.fileId != null)
+            pdfFileRepository.delete(book.fileId)
+
         bookMetaRepository.delete(book)
     }
 
