@@ -74,9 +74,6 @@ myApp = angular.module('myApp', ['ui.bootstrap', 'smart-table']);
             }
 
             promise.then((response) => {
-                if(!response.data.success)
-                    return $q.reject(response.data);
-
                 result.book.fileId = response.data.id;
                 return $http({
                     method: 'POST',
@@ -90,7 +87,7 @@ myApp = angular.module('myApp', ['ui.bootstrap', 'smart-table']);
                     $scope.messageText = "";
                 }
             ).catch((err) => {
-                $log.error("Can't add book, err:", err.data);
+                $log.error("Can't add book, err:", err);
                 $scope.messageText = "Can't save book. Internal error.";
                 $timeout(() => $scope.messageText = "", 5000);
             });
